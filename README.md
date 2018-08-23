@@ -1,0 +1,1 @@
+# letsencrypt-aliyun-dns-manual-hook
