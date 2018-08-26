@@ -17,6 +17,11 @@ git clone https://github.com/broly8/letsencrypt-aliyun-dns-manual-hook.git
 ### 二、配置appid和appsecret
 首先去自己的阿里云域名管理后台，申请有增加和删除域名权限的appid和appsecret。具体申请步骤请自行摸索，网上应该有很多资料。  
 然后把申请好的appid和appsecret填入到**config.ini**文件中。
+```
+[aliyun]
+appid=your-appid
+appsecret=your-appsecret
+```
 
 ### 三、申请通配符证书
 官方的证书申请工具certbot，有两个参数 **--manual-auth-hook** 和 **--manual-cleanup-hook**  
@@ -30,7 +35,7 @@ certbot certonly \
 --manual-cleanup-hook 'python /path/to/manual-hook.py --cleanup'
 ```
 
-如果你对certbot工具不熟悉，或者仅仅想申请自己的通配符域名，可以使用本人提供的另一个脚本工具 **letsencrypt-create.sh** ，使用方法很简单
+如果你对certbot工具不熟悉，或者仅仅想申请自己的通配符证书，可以使用本人提供的另一个脚本工具 **letsencrypt-create.sh** ，使用方法很简单
 ```
 sh letsencrypt-create.sh -m your-email@example.com -d yourdomain.com
 ```
