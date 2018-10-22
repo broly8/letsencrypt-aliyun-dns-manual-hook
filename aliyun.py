@@ -8,6 +8,7 @@ import hashlib
 import hmac
 import urllib
 import urllib2
+import json
 
 
 class AliyunDns:
@@ -77,9 +78,17 @@ class AliyunDns:
             response = f.read()
 
             print(response)
+            return response
         except urllib2.HTTPError as e:
             print(e.read().strip())
             raise SystemExit(e)
+
+    def getDomainRecords(self, domain):
+        params = {
+            'Action': 'DescribeDomains',
+            'KeyWord': domain
+        }
+        return self.__request(params)
 
     def addDomainRecord(self, domain, rr, value):
         params = {
@@ -101,11 +110,20 @@ class AliyunDns:
         self.__request(params)
 
     def addLetsencryptDomainRecord(self, domain, value):
-        self.addDomainRecord(domain, self.__letsencryptSubDomain, value)
+        domain, subdomain = self.getDomainPair(domain)
+        self.addDomainRecord(domain, subdomain, value)
 
     def deleteLetsencryptDomainRecord(self, domain):
-        self.deleteSubDomainRecord(domain, self.__letsencryptSubDomain)
+        domain, subdomain = self.getDomainPair(domain)
+        self.deleteSubDomainRecord(domain, subdomain)
 
     def toString(self):
         print('AliyunDns[appid='+self.__appid +
               ', appsecret='+self.__appsecret+']')
+
+    def getDomainPair(self, domain):
+        subdomain = '.'.join([self.__letsencryptSubDomain] + domain.split('.')[:-2])
+        domain = '.'.join(domain.split('.')[-2:])
+        result = self.getDomainRecords(domain)
+        domain = json.loads(result)['Domains']['Domain'][0]['DomainName']
+        return domain, subdomain
