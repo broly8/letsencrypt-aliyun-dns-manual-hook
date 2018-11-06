@@ -11,8 +11,7 @@ CONFIG_FILENAME = 'config.ini'
 
 
 def getAliyunDnsInstance():
-    configFilepath = os.path.abspath(
-        os.getcwd()) + os.path.sep + CONFIG_FILENAME
+    configFilepath = os.path.split(os.path.realpath(__file__))[0] + os.path.sep + CONFIG_FILENAME
 
     config = ConfigParser.ConfigParser()
     config.read(configFilepath)
@@ -90,7 +89,7 @@ def usage():
         delim = delim + ' ' * spaceLen
         print(firstPart + delim + secondPart)
 
-    print('Usage: dmlkdevtool.py [option] [arg] ...')
+    print('Usage: python %s [option] [arg] ...' % os.path.basename(__file__))
     print('Options:')
     printOpt(['-h', '--help'],
              'Display help information.')
@@ -112,7 +111,8 @@ def version():
 def main(argc, argv):
     try:
         if(argc == 1):
-            raise GlobalException('', 1)
+            usage()
+            raise Exception('')
 
         opts, args = getopt.getopt(
             argv[1:],
@@ -139,11 +139,9 @@ def main(argc, argv):
 
     except getopt.GetoptError as e:
         print('Error: ' + str(e) + '\n')
-    except GlobalException as e:
+    except Exception as e:
         if e.message != '':
             print('Error: ' + str(e.message) + '\n')
-        if e.code > 0:
-            usage()
 
         sys.exit()
 
