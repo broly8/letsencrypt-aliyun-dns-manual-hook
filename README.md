@@ -15,7 +15,7 @@ git clone https://github.com/broly8/letsencrypt-aliyun-dns-manual-hook.git
 ```
 
 ### 二、配置appid和appsecret
-首先去自己的阿里云域名管理后台，申请有增加和删除域名权限的appid和appsecret。具体申请步骤请自行摸索，网上应该有很多资料。  
+首先去自己的阿里云域名管理后台，申请有增加和删除域名权限的appid和appsecret。具体申请步骤请参考 https://help.aliyun.com/knowledge_detail/38738.html
 然后把申请好的appid和appsecret填入到**config.ini**文件中。
 ```
 [aliyun]
