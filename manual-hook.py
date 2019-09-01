@@ -4,20 +4,40 @@ import sys
 import os
 import getopt
 import time
-import ConfigParser
+if sys.version_info < (3,0):
+    import ConfigParser
+else:
+    import configparser as ConfigParser
 import aliyun
+import logging
+import logging.handlers
 
+# Set the global configuration
 CONFIG_FILENAME = 'config.ini'
+configFilepath = os.path.split(os.path.realpath(__file__))[0] + os.path.sep + CONFIG_FILENAME
+config = ConfigParser.ConfigParser()
+config.read(configFilepath)
+
+logger = logging.getLogger("logger")
+formatter = logging.Formatter("%(asctime)s %(name)s %(levelname)s %(message)s")
+consoleHandler = logging.StreamHandler()
+logger.setLevel(logging.DEBUG)
+consoleHandler.setLevel(logging.DEBUG)
+consoleHandler.setFormatter(formatter)
+logger.addHandler(consoleHandler)
+
+fileLogFlag = True if config.get('log','enable').lower() == 'true' else False
+if fileLogFlag:
+    logfile = config.get('log','logfile')
+    fileHandler = logging.FileHandler(filename=logfile)
+    fileHandler.setLevel(logging.DEBUG)
+    fileHandler.setFormatter(formatter)
+    logger.addHandler(fileHandler)
 
 
 def getAliyunDnsInstance():
-    configFilepath = os.path.split(os.path.realpath(__file__))[0] + os.path.sep + CONFIG_FILENAME
-
-    config = ConfigParser.ConfigParser()
-    config.read(configFilepath)
     appid = config.get('aliyun', 'appid')
     appsecret = config.get('aliyun', 'appsecret')
-
     return aliyun.AliyunDns(appid, appsecret)
 
 
@@ -32,6 +52,10 @@ def auth():
         domain = os.environ['CERTBOT_DOMAIN']
         value = os.environ['CERTBOT_VALIDATION']
 
+        logger.info('Start setting DNS')
+        logger.info('Domain:' + domain)
+        logger.info('Value:' + value)
+
         aliyunDns = getAliyunDnsInstance()
         # aliyunDns.toString()
 
@@ -39,12 +63,14 @@ def auth():
         aliyunDns.addLetsencryptDomainRecord(domain, value)
 
         # wait for completion
+        logger.info('sleep 10 secs')
         time.sleep(10)
 
-        print('Success.')
+        logger.info('Success.')
+        logger.info('DNS setting end!')
 
     except Exception as e:
-        print('Error: ' + str(e.message) + '\n')
+        logger.error('Error: ' + str(e.message) + '\n')
         sys.exit()
 
 
@@ -54,7 +80,8 @@ def cleanup():
             raise Exception('Environment variable CERTBOT_DOMAIN is empty.')
 
         domain = os.environ['CERTBOT_DOMAIN']
-
+        logger.info('Start to clean up')
+        logger.info('Domain:' + domain)
         aliyunDns = getAliyunDnsInstance()
         # aliyunDns.toString()
 
@@ -64,10 +91,11 @@ def cleanup():
         # wait for completion
         time.sleep(10)
 
-        print('Success.')
+        logger.info('Success.')
+        logger.info('Clean up end!')
 
     except Exception as e:
-        print('Error: ' + str(e.message) + '\n')
+        logger.error('Error: ' + str(e.message) + '\n')
         sys.exit()
 
 
@@ -135,13 +163,15 @@ def main(argc, argv):
             elif opt in ('--cleanup'):
                 cleanup()
             else:
-                print('Invalid option: ' + opt)
+                logger.error('Invalid option: ' + opt)
 
     except getopt.GetoptError as e:
-        print('Error: ' + str(e) + '\n')
+        logger.error('Error: ' + str(e) + '\n')
+    except AttributeError as e:
+        logger.error(e.args)
     except Exception as e:
         if e.message != '':
-            print('Error: ' + str(e.message) + '\n')
+            logger.error('Error: ' + str(e.message) + '\n')
 
         sys.exit()
 

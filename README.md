@@ -22,8 +22,14 @@ git clone https://github.com/broly8/letsencrypt-aliyun-dns-manual-hook.git
 appid=your-appid
 appsecret=your-appsecret
 ```
-
-### 三、申请通配符证书
+### 三、配置日志
+如果要启用日志记录功能.方便追查操作,可以修改log节点下的enable为True. logfile参数为日志位置和日志文件名.默认生成在当前目录下
+```
+[log]
+enable=False
+logfile=dmlkdevtool.log
+```
+### 四、申请通配符证书
 官方的证书申请工具certbot，有两个参数 **--manual-auth-hook** 和 **--manual-cleanup-hook**  
 即分别指定脚本，去增加TXT记录的域名和删除。
 
