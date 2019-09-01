@@ -20,7 +20,7 @@ config.read(configFilepath)
 
 logger = logging.getLogger("logger")
 formatter = logging.Formatter("%(asctime)s %(name)s %(levelname)s %(message)s")
-consoleHandler = logging.StreamHandler()
+consoleHandler = logging.StreamHandler(stream=sys.stdout)
 logger.setLevel(logging.DEBUG)
 consoleHandler.setLevel(logging.DEBUG)
 consoleHandler.setFormatter(formatter)

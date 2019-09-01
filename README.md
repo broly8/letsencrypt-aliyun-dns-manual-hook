@@ -23,7 +23,7 @@ appid=your-appid
 appsecret=your-appsecret
 ```
 ### 三、配置日志
-如果要启用日志记录功能.方便追查操作,可以修改log节点下的enable为True. logfile参数为日志位置和日志文件名.默认生成在当前目录下
+如果要启用日志记录功能.方便追查操作,可以修改log节点下的enable为True. logfile参数为日志位置和日志文件名.默认生成在/var/log下
 ```
 [log]
 enable=False
