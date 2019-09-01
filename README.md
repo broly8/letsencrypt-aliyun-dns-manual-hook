@@ -40,6 +40,17 @@ certbot certonly \
 --manual-auth-hook 'python /path/to/manual-hook.py --auth' \
 --manual-cleanup-hook 'python /path/to/manual-hook.py --cleanup'
 ```
+如果是多域名,可以修改/etc/letsencrypt/renewal/[domain].conf 在renewalparams 节点下.添加两行配置即可.
+```
+[renewalparams]
+authenticator = manual
+account = xxxxxxxxxxxxxxxxxxx
+pref_challs = dns-01,
+manual_public_ip_logging_ok = True
+server = https://acme-v02.api.letsencrypt.org/directory
+manual_auth_hook = python /opt/dns-hook/manual-hook.py --auth
+manual_cleanup_hook = python /opt/dns-hook/manual-hook.py --cleanup
+```
 
 如果你对certbot工具不熟悉，或者仅仅想申请自己的通配符证书，可以使用本人提供的另一个脚本工具 **letsencrypt-create.sh** ，使用方法很简单
 ```
