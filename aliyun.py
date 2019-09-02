@@ -6,8 +6,15 @@ import urllib
 import base64
 import hashlib
 import hmac
-import urllib
-import urllib2
+import logging
+import logging.handlers
+
+if sys.version_info < (3,0):
+    import urllib2
+    import urllib
+else:
+    import urllib.request as urllib2
+    import urllib.parse as urllib
 
 
 class AliyunDns:
@@ -15,6 +22,7 @@ class AliyunDns:
     __letsencryptSubDomain = '_acme-challenge'
     __appid = ''
     __appsecret = ''
+    __logger = logging.getLogger("logger")
 
     def __init__(self, appid, appsecret):
         self.__appid = appid
@@ -24,8 +32,11 @@ class AliyunDns:
         return int(round(time.time() * 1000))
 
     def __percentEncode(self, str):
-        res = urllib.quote(str.decode(
-            sys.stdin.encoding).encode('utf8'), '')
+        if sys.version_info <(3,0):
+            res = urllib.quote(str.decode(
+                sys.stdin.encoding).encode('utf8'), '')
+        else:
+            res = urllib.quote(str.encode('utf8'))
         res = res.replace('+', '%20')
         res = res.replace('\'', '%27')
         res = res.replace('\"', '%22')
@@ -43,7 +54,13 @@ class AliyunDns:
                 self.__percentEncode(k) + '=' + self.__percentEncode(str(v))
 
         stringToSign = 'GET&%2F&' + self.__percentEncode(query[1:])
-        h = hmac.new(self.__appsecret + "&", stringToSign, hashlib.sha1)
+        try:
+            if (sys.version_info <(3,0)):
+                h = hmac.new(self.__appsecret + "&", stringToSign, hashlib.sha1)
+            else:
+                h = hmac.new((self.__appsecret + "&").encode(encoding="utf-8"), stringToSign.encode(encoding="utf-8"), hashlib.sha1)
+        except Exception as e:
+            self.__logger.error(e)
         signature = base64.encodestring(h.digest()).strip()
 
         return signature
@@ -66,7 +83,7 @@ class AliyunDns:
 
         # signature
         finalParams['Signature'] = self.__signature(finalParams)
-
+        self.__logger.info('Signature'+ str(finalParams['Signature']))
         # get final url
         url = '%s/?%s' % (self.__endpoint, urllib.urlencode(finalParams))
         # print(url)
@@ -75,10 +92,9 @@ class AliyunDns:
         try:
             f = urllib2.urlopen(request)
             response = f.read()
-
-            print(response)
+            self.__logger.info(response.decode('utf-8'))
         except urllib2.HTTPError as e:
-            print(e.read().strip())
+            self.__logger.info(e.read().strip().decode('utf-8'))
             raise SystemExit(e)
 
     def addDomainRecord(self, domain, rr, value):
