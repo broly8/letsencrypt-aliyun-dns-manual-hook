@@ -33,8 +33,7 @@ class AliyunDns:
 
     def __percentEncode(self, str):
         if sys.version_info <(3,0):
-            res = urllib.quote(str.decode(
-                sys.stdin.encoding).encode('utf8'), '')
+            res = urllib.quote(str.decode().encode('utf8'), '')
         else:
             res = urllib.quote(str.encode('utf8'))
         res = res.replace('+', '%20')
