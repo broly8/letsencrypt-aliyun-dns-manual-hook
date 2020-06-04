@@ -116,10 +116,20 @@ class AliyunDns:
         self.__request(params)
 
     def addLetsencryptDomainRecord(self, domain, value):
-        self.addDomainRecord(domain, self.__letsencryptSubDomain, value)
+        parts = domain.split('.')
+        ln = len(parts)
+        if ln > 2 and not domain.endswith(".cn"):
+            self.addDomainRecord(".".join(parts[ln - 2:ln]), self.__letsencryptSubDomain + '.' + ".".join(parts[0:ln - 2]), value)
+        else:
+            self.addDomainRecord(domain, self.__letsencryptSubDomain, value)
 
     def deleteLetsencryptDomainRecord(self, domain):
-        self.deleteSubDomainRecord(domain, self.__letsencryptSubDomain)
+        parts = domain.split('.')
+        ln = len(parts)
+        if ln > 2 and not domain.endswith(".cn"):
+            self.deleteSubDomainRecord(".".join(parts[ln - 2:ln]), self.__letsencryptSubDomain + '.' + ".".join(parts[0:ln - 2]))
+        else:
+            self.deleteSubDomainRecord(domain, self.__letsencryptSubDomain)
 
     def toString(self):
         print('AliyunDns[appid='+self.__appid +
