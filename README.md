@@ -4,7 +4,7 @@ Let’s Encrypt通配符证书申请，只能用DNS plugins的验证方式。其
 - **--manual-auth-hook**  
 - **--manual-cleanup-hook**
 
-强烈建议看完本人的这篇博文之后再来使用：《[LET’S ENCRYPT通配符证书的申请与自动更新（附阿里云域名的HOOK脚本）](http://blog.dreamlikes.cn/archives/1028)》
+强烈建议看完本人的这篇博文之后再来使用：《[LET’S ENCRYPT通配符证书的申请与自动更新（附阿里云域名的HOOK脚本）](https://blog.dreamlikes.cn/2018/08/25/lets-encrypt-wildcard-certificate-apply-and-auto-renew/)》
 
 这个工具是专门针对阿里云（万网）域名使用的，其他域名供应商的请勿使用。
 
