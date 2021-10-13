@@ -12,9 +12,11 @@ import logging.handlers
 if sys.version_info < (3,0):
     import urllib2
     import urllib
+    from base64 import encodestring as base64encode
 else:
     import urllib.request as urllib2
     import urllib.parse as urllib
+    from base64 import encodebytes as base64encode
 
 
 class AliyunDns:
@@ -60,7 +62,7 @@ class AliyunDns:
                 h = hmac.new((self.__appsecret + "&").encode(encoding="utf-8"), stringToSign.encode(encoding="utf-8"), hashlib.sha1)
         except Exception as e:
             self.__logger.error(e)
-        signature = base64.encodestring(h.digest()).strip()
+        signature = base64encode(h.digest()).strip()
 
         return signature
 
