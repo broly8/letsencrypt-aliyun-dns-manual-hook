@@ -43,11 +43,10 @@ def getAliyunDnsInstance():
 
 def auth():
     try:
-        if not os.environ.has_key('CERTBOT_DOMAIN'):
+        if 'CERTBOT_DOMAIN' not in os.environ:
             raise Exception('Environment variable CERTBOT_DOMAIN is empty.')
-        if not os.environ.has_key('CERTBOT_VALIDATION'):
-            raise Exception(
-                'Environment variable CERTBOT_VALIDATION is empty.')
+        if 'CERTBOT_VALIDATION' not in os.environ:
+            raise Exception('Environment variable CERTBOT_VALIDATION is empty.')
 
         domain = os.environ['CERTBOT_DOMAIN']
         value = os.environ['CERTBOT_VALIDATION']
@@ -70,13 +69,13 @@ def auth():
         logger.info('DNS setting end!')
 
     except Exception as e:
-        logger.error('Error: ' + str(e.message) + '\n')
+        logger.error(str(e))
         sys.exit()
 
 
 def cleanup():
     try:
-        if not os.environ.has_key('CERTBOT_DOMAIN'):
+        if 'CERTBOT_DOMAIN' not in os.environ:
             raise Exception('Environment variable CERTBOT_DOMAIN is empty.')
 
         domain = os.environ['CERTBOT_DOMAIN']
@@ -95,7 +94,7 @@ def cleanup():
         logger.info('Clean up end!')
 
     except Exception as e:
-        logger.error('Error: ' + str(e.message) + '\n')
+        logger.error(str(e))
         sys.exit()
 
 
@@ -166,12 +165,11 @@ def main(argc, argv):
                 logger.error('Invalid option: ' + opt)
 
     except getopt.GetoptError as e:
-        logger.error('Error: ' + str(e) + '\n')
+        logger.error(str(e))
     except AttributeError as e:
         logger.error(e.args)
     except Exception as e:
-        if e.message != '':
-            logger.error('Error: ' + str(e.message) + '\n')
+        logger.error(str(e))
 
         sys.exit()
 
